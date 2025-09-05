@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DANIELS' PERFUMES</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- React and Babel CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .nav-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .nav-container.open {
+      max-height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+     // Product data moved outside to be shared by all components
+    const ALL_PRODUCTS = [
+      {
+        id: 1, name: 'Vanilla Powder', desc: 'A sweet, powdery, and elegant vanilla-based fragrance.', gender: 'women', imageUrl: 'images/Vanilla Powder.jpg', sizes: [
+          { size: '100ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 2, name: 'Girl of Now', desc: 'Gourmand sweet almond and pistachio blend with floral notes.', gender: 'women', imageUrl: 'images/girl of now.jpg', sizes: [
+          { size: '90ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 3, name: 'So Scandal!', desc: 'Bold, sexy, sweet floral-fruity fragrance.', gender: 'women', imageUrl: 'images/so scandal.jpg', sizes: [
+          { size: '30ml', price: 'UGX 50,000' },
+          { size: '50ml', price: 'UGX 80,000' },
+          { size: '80ml', price: 'UGX 120,000'},
+          { size: '100ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 4, name: 'Vanilla 28', desc: 'Warm vanilla with brown sugar, creamy and sweet.', gender: 'women', imageUrl: 'images/Kayali Vanilla 28.jpg', sizes: [
+          { size: '100ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 5, name: 'Mancera Coco Vanille (EDP)', desc: 'Luxurious, long-lasting, very tropical.', gender: 'women', imageUrl: 'images/coconut passion vs.jpg', sizes: [
+          { size: '120ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 6, name: 'Kayali Pistachio Gelato', desc: 'Gourmand pistachio, marshmallow, and whipped cream.', gender: 'women', imageUrl: 'images/pistassio.jpg', sizes: [
+          { size: '50ml', price: 'UGX 80,000' },
+          { size: '100ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 7, name: 'Kayali Boujee Marshmallow', desc: 'Sweet gourmand marshmallow scent, ultra-feminine.', gender: 'women', imageUrl: 'images/Kayali Yum Boujee Marshmallow.jpg', sizes: [
+          { size: '50ml', price: 'UGX 80,000' },
+          { size: '100ml', price: 'UGX 160,000' }
+        ]
+      },
+      {
+        id: 8, name: 'Flowerbomb', desc: 'A powerful floral explosion, iconic feminine perfume.', gender: 'women', imageUrl: 'images/flowerbomb.jpg', sizes: [
+        { size: '30ml', price: 'UGX 50,000' },
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 9, name: 'Gris Dior', desc: 'Elegant rose, patchouli, and woods, feminine-leaning.', gender: 'women', imageUrl: 'images/gris dior.jpg', sizes: [
+        { size: '40ml', price: 'UGX 80,000' },
+        { size: '125ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 10, name: 'La Vie Est Belle', desc: 'Sweet, floral, and gourmand with iris and vanilla.', gender: 'women', imageUrl: 'images/la vie est belle.jpg', sizes: [
+        { size: '30ml', price: 'UGX 50,000' },
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 11, name: 'Cherry in Air', desc: 'Fruity cherry candy-like fragrance, youthful.', gender: 'women', imageUrl: 'images/cherry in air.jpg', sizes: [
+        { size: '30ml', price: 'UGX 50,000' },
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 12, name: 'Paradoxe', desc: 'Modern floral with amber and musk, feminine-leaning.', gender: 'women', imageUrl: 'images/prada paradoxe.jpg', sizes: [
+        { size: '30ml', price: 'UGX 50,000' },
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 13, name: 'Santa Strawberry Nest Barbra', desc: 'Fruity, sweet, playful feminine fragrance.', gender: 'women', imageUrl: 'santa barbra', sizes: [
+        { size: '30ml', price: 'UGX 50,000' },
+      ]
+      },
+      {
+        id: 14, name: 'Hibiscus Mahajad', desc: 'Rich floral fruity scent with hibiscus and rose.', gender: 'women', imageUrl: 'images/Hibiscus mahajad.jpg', sizes: [
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 16, name: 'Bad Boy', desc: 'Fresh, spicy, and sweet with cacao and tonka.', gender: 'men', imageUrl: 'images/bad boy ch.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 17, name: 'Intense Black', desc: 'Deep masculine woody-spicy cologne.', gender: 'men', imageUrl: 'images/intense black.jpg', sizes: [
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 18, name: 'Creed Aventus', desc: 'Pineapple, birch, musk, and ambergris - iconic masculine.', gender: 'men', imageUrl: 'images/creed.jpg', sizes: [
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 19, name: 'Wood Sage & Sea Salt', desc: 'Fresh, earthy, mineral, and salty.', gender: 'unisex', imageUrl: 'images/wood sage.jpg', sizes: [
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 20, name: 'Amouage Guidance', desc: 'Rich amber, rose, and woods, perfectly balanced.', gender: 'unisex', imageUrl: 'images/amouage guidance.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 21, name: 'Initio Side Effect', desc: 'Rum, vanilla, tobacco, and cinnamon, strong unisex gourmand.', gender: 'unisex', imageUrl: 'images/initio.jpg', sizes: [
+        { size: '90ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 22, name: 'Oud Cadenza', desc: 'Smoky, resinous oud with spicy undertones.', gender: 'unisex', imageUrl: 'images/Oud Cadenza.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 23, name: 'Tom Ford Fucking Fabulous', desc: 'Leather, almond, and tonka, bold and captivating.', gender: 'unisex', imageUrl: 'images/Tom ford parfum.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 24, name: 'Hareem Al Sultan', desc: 'Sweet amber, oud, and rose, Middle Eastern luxury.', gender: 'unisex', imageUrl: 'images/hareem.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 25, name: 'TomFord Oud Tobacco', desc: 'Warm fragrance blending smoky tobacco, deep oud, and spicy notes for a luxurious, sophisticated scent.', gender: 'men', imageUrl: 'images/tom ford tobacco oud.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 26, name: 'Dior Sauvage', desc: 'Fresh ambroxan with bergamot and pepper.', gender: 'men', imageUrl: 'images/sauvage.jpg', sizes: [
+        { size: '60ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 27, name: 'Bleu de Chanel', desc: 'Versatile woody aromatic with citrus notes.', gender: 'men', imageUrl: 'images/Bleu de Chanel.jpg', sizes: [
+        { size: '100ml', price: 'UGX 80,000' },
+        { size: '150ml', price: 'UGX 160,000' }
+      ]
+      },
+      {
+        id: 28, name: 'Santal 33', desc: 'Signature sandalwood with leather and musk notes.', gender: 'unisex', imageUrl: 'images/SANTAL 33.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+        {
+        id: 29, name: 'Coco Chanel Mademoiselle', desc: 'An oriental fragrance with a vibrant blend of orange, rose, and jasmine.', gender: 'women', imageUrl: 'images/coco chanel.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+      },
+       {
+        id: 30, name: 'Idole Lancome', desc: ' modern floral scent, perfectly balanced with notes of rose, jasmine, and a touch of musk.', gender: 'women', imageUrl: 'images/idole lancome.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+       {
+        id: 31, name: 'Miss Dior', desc: ' beautiful and elegant fragrance with a bouquet of rose, lily-of-the-valley, and peony.', gender: 'women', imageUrl: 'images/miss dior.jpg', sizes: [
+        { size: '30ml', price: 'UGX 80,000' },
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+       {
+        id: 32, name: 'Beyonce Heat Rush', desc: 'fruity and juicy fragrance with notes of passion fruit, blood orange, and sweet cherry.', gender: 'women', imageUrl: 'images/heat rush.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+       {
+        id: 33, name: 'Good Girl', desc: 'bold blend of gourmand and floral notes with hints of almond, tuberose, and roasted tonka bean.', gender: 'women', imageUrl: 'images/good girl.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+       {
+        id: 34, name: 'Gucci Flora', desc: ' light, fresh, and vibrant floral with notes of citrus, peony, and osmanthus.', gender: 'women', imageUrl: 'images/gucci flora.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+       },
+        {
+        id: 35, name: 'Dune Christian Dior', desc: 'warm and woody fragrance with a beautiful harmony of amber, vanilla, and various florals.', gender: 'women', imageUrl: 'images/dior dune.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 36, name: 'Channel No.5', desc: 'legendary and complex floral-aldehyde fragrance with notes of ylang-ylang, rose, and jasmine.', gender: 'women', imageUrl: 'images/chanel 5.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 37, name: 'Gabriel Channel', desc: 'luminous and airy floral fragrance with a radiant blend of jasmine, ylang-ylang, and orange blossom.', gender: 'women', imageUrl: 'images/chanel gab.jpg', sizes: [
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 38, name: 'Nishane Hundred Silent Ways', desc: 'floral and gourmand fragrance that beautifully blends notes of mandarin, tuberose, and vanilla.', gender: 'unisex', imageUrl: 'images/nishane.jpg', sizes: [
+        { size: '30ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 39, name: 'Azzaro Chrome', desc: 'fresh and aquatic scent, perfectly balanced with notes of citrus, musk, and a woody base.', gender: 'men', imageUrl: 'images/azzaro chrome.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 40, name: 'Paco Rabbane Black XS', desc: 'bold and intense fragrance with a blend of sweet lemon, praline, and deep woods.', gender: 'men', imageUrl: 'images/black xs.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+      },
+        {
+        id: 42, name: 'Loius Vuitton Imagination', desc: 'fresh, citrusy, elegant, and long-lasting., and vanilla', gender: 'unisex', imageUrl: 'images/imagination lv.jpg', sizes: [
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 43, name: 'Stronger with You Absolutely', desc: 'fresh, citrusy, elegant, and long-lasting., and vanilla', gender: 'men', imageUrl: 'images/s w y absolutely.jpg', sizes: [
+        { size: '30ml', price: 'UGX 80,000' },
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 44, name: 'Hugo Boss', desc: 'classic masculine fragrance with fresh, woody, and spicy notes.', gender: 'men', imageUrl: 'images/hugo boss.jpg', sizes: [
+        { size: '50ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 45, name: 'Versace Eros', desc: 'powerful masculine fragrance with mint, vanilla, and citrus.', gender: 'men', imageUrl: 'images/eros.jpg', sizes: [
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 46, name: 'Spicebomb Extreme', desc: 'spicy, warm, and explosive masculine fragrance.', gender: 'men', imageUrl: 'images/spicebomb extreme.jpg', sizes: [
+
+        { size: '50ml', price: 'UGX 80,000' },
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+        },
+         {
+        id: 47, name: 'Valentino Uomo Intense Born In Roma', desc: 'deep, sensual masculine scent with leather and vanilla.', gender: 'unisex', imageUrl: 'images/valentino intense.jpg', sizes: [
+
+        { size: '100ml', price: 'UGX 160,000' }
+      ]
+        },
+    ];
+    // Main App Component
+    const App = () => {
+      const [currentPage, setCurrentPage] = useState('home');
+      const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+      // New state to manage the search query
+      const [searchQuery, setSearchQuery] = useState('');
+
+      const handlePageChange = (page) => {
+        setCurrentPage(page);
+        setSearchQuery(''); // Clear search query when navigating
+        window.scrollTo(0, 0);
+      };
+
+      // New function to handle search input changes
+      const handleSearch = (query) => {
+        setSearchQuery(query);
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        // Simulate form submission
+        console.log('Form submitted!');
+        setShowSuccessMessage(true);
+        setTimeout(() => setShowSuccessMessage(false), 5000); // Hide message after 5 seconds
+      };
+
+      // Filter products based on the search query
+      const filteredProducts = ALL_PRODUCTS.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      const renderPage = () => {
+        // If there's a search query, render the search results page
+        if (searchQuery) {
+          return <SearchResultsPage products={filteredProducts} searchQuery={searchQuery} />;
+        }
+
+        // Otherwise, render the current page based on state
+        switch (currentPage) {
+          case 'home':
+            return <HomePage onNavigate={handlePageChange} />;
+          case 'men':
+            return <FragranceCategoryPage title="Men's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'men')} />;
+          case 'women':
+            return <FragranceCategoryPage title="Women's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'women')} />;
+          case 'unisex':
+            return <FragranceCategoryPage title="Unisex Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'unisex')} />;
+          case 'about':
+            return <AboutPage />;
+          case 'contact':
+            return <ContactPage onSubmit={handleSubmit} showSuccess={showSuccessMessage} />;
+          default:
+            return <HomePage onNavigate={handlePageChange} />;
+        }
+      };
+
+      return (
+        <div className="bg-[#0f0f12] text-[#f5f6f8] min-h-screen font-[Poppins]">
+          <Header onNavigate={handlePageChange} currentPage={currentPage} onSearch={handleSearch} searchQuery={searchQuery} />
+          <div className="container mx-auto px-4 py-8">
+            {renderPage()}
+          </div>
+          <Footer />
+        </div>
+      );
+    };
+
+    // Header Component
+    const Header = ({ onNavigate, currentPage, onSearch, searchQuery }) => {
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      const navItems = [
+        { key: 'home', label: 'Home' },
+        { key: 'men', label: 'Men' },
+        { key: 'women', label: 'Women' },
+        { key: 'unisex', label: 'Unisex' },
+      ];
+
+      return (
+        <header className="bg-black text-white">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img src="images/daniel logo.jpg" className="w-10 h-10 rounded-xl shadow-lg" alt="Daniels Perfumes Logo" />
+              <span className="font-semibold">DANIELS' PERFUMES</span>
+            </div>
+
+            {/* Desktop nav */}
+            <nav className="hidden sm:flex space-x-4">
+              {navItems.map(item => (
+                <button
+                  key={item.key}
+                  onClick={() => onNavigate(item.key)}
+                  className={`px-3 py-2 rounded ${currentPage === item.key ? 'bg-white text-black' : 'hover:bg-white/10'}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Mobile toggle */}
+            <div className="sm:hidden">
+              <button onClick={() => setIsMenuOpen(v => !v)} aria-label="Toggle menu" className="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile menu */}
+          <div className={`nav-container ${isMenuOpen ? 'open' : ''} sm:hidden bg-black px-4`}>
+            <div className="flex flex-col space-y-2 py-3">
+              {navItems.map(item => (
+                <button
+                  key={item.key}
+                  onClick={() => { setIsMenuOpen(false); onNavigate(item.key); }}
+                  className="text-left px-3 py-2 rounded hover:bg-white/10 text-white"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </header>
+      );
+    };
+
+    // Footer Component
+    const Footer = () => (
+      <footer className="py-8 text-center text-white/50 text-sm">
+        <p>© {new Date().getFullYear()} DANIELS' PERFUMES – All rights reserved.</p>
+        <div className="mt-2 flex justify-center items-center">
+          <a href="https://www.instagram.com/danielperfumes_ug?igsh=d3ppb2p1ZXg5MjVt" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#d2b48c] transition-colors">
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fab"
+              data-icon="instagram"
+              className="w-5 h-5"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+              fill="currentColor"
+            >
+              <path d="M224.1 128.7c-33.1 0-59.5 26.5-59.5 59.5s26.5 59.5 59.5 59.5c33.1 0 59.5-26.5 59.5-59.5S257.2 128.7 224.1 128.7zM425 224c-1.3 22-8.3 43.3-21.6 62.1c-13.3 18.9-31.5 33.9-52 42.1c-20.5 8.1-43.1 10.3-64.8 6.4c-21.7-3.9-42.3-13.1-59.3-27.1c-17-14-30.8-32.3-40.2-53.5c-9.4-21.2-13.6-44.5-12.2-67.6c1.4-23.1 8.2-46.1 20.9-66.9c12.7-20.8 29.5-38.3 49.3-51.5c19.8-13.2 41.5-21.1 63.8-23.7c22.3-2.6 44.5-1.5 65.6 3.1c21.2 4.6 40.8 13.9 57.7 27.6c16.9 13.7 30.5 31.4 39.7 51.5c9.2 20.1 13.1 41.8 11.8 63.8zM224.1 0c-40.8 0-78.5 16.2-106.6 44.4C89.5 72.4 73.3 110.1 73.3 150.9c0 40.8 16.2 78.5 44.4 106.6c28.1 28.2 65.8 44.4 106.6 44.4c40.8 0 78.5-16.2 106.6-44.4c28.1-28.1 44.4-65.8 44.4-106.6c0-40.8-16.2-78.5-44.4-106.6C302.6 16.2 264.9 0 224.1 0zm0 304.1c-8.9 0-17.7-.3-26.4-.9c-8.7-.6-17.3-1.8-25.8-3.5c-8.5-1.7-16.9-3.9-25.1-10.2c-7.8-6.3-14.1-13.2-20.7-20.7c-6.6-7.5-12.7-15.4-18.4-23.1c-5.7-7.7-10.6-15.8-15.1-24.1c-4.5-8.3-8.2-16.8-11.1-25.5c-2.9-8.7-5.1-17.5-6.5-26.4c-1.4-8.9-1.6-17.9-.7-26.9c.9-9 2.9-17.9 5.8-26.7c2.9-8.8 6.7-17.5 11.4-25.9c4.7-8.4 10.3-16.5 16.8-24.1c6.5-7.6 13.8-14.7 21.8-21.2c8-6.5 16.7-12.4 25.9-17.5c9.2-5.1 18.7-9.5 28.5-13.1c9.8-3.6 19.8-6.5 30-8.8c10.2-2.3 20.4-3.9 30.6-4.7c10.2-.8 20.4-.8 30.5 0c10.1 0 20.1.8 30 2.3c9.9 1.5 19.5 3.5 28.9 6.2c9.4 2.7 18.7 5.9 27.8 9.7c9.1 3.8 18.1 8.2 26.8 13.1c8.7 4.9 17.2 10.3 25.4 16.3c8.2 6 16.2 12.6 23.9 19.9c7.7 7.3 15 15.2 21.9 23.7c6.9 8.5 13.4 17.5 19.5 27c6.1 9.5 11.7 19.4 16.8 29.8c5.1 10.4 9.6 21.1 13.5 32.2c3.9 11.1 7.2 22.5 9.9 34.2c2.7 11.7 4.8 23.5 6.2 35.5c1.4 12 .9 24.1-1.3 36.1c-2.2 12-5.5 23.7-9.9 35.1c-4.4 11.4-9.8 22.5-16.1 33.1c-6.3 10.6-13.4 20.8-21.4 30.4c-8 9.6-16.8 18.8-26.4 27.5c-9.6 8.7-19.9 16.9-31 24.4c-11.1 7.5-22.8 14.4-35.2 20.5c-12.4 6.1-25.2 11.5-38.3 16.2c-13.1 4.7-26.4 8.7-39.7 12c-13.3 3.3-26.6 5.8-39.8 7.6c-13.2 1.8-26.5 2.8-39.7 3.1c-13.2.3-26.4.2-39.6-.3c-13.2-.5-26.4-1.5-39.5-3.1c-13.1-1.6-26.2-3.8-39.1-6.7c-12.9-2.9-25.6-6.5-38.1-10.8c-12.5-4.3-24.8-9.4-36.8-15.3c-12-5.9-23.7-12.6-35.2-20c-11.5-7.4-22.7-15.5-33.5-24.3c-10.8-8.8-21.2-18.4-31.1-28.7c-9.9-10.3-19.2-21.4-28-33.1c-8.8-11.7-17.1-24.1-24.8-37.1c-7.7-13-14.8-26.6-21.2-40.8c-6.4-14.2-12.2-28.9-17.4-44c-5.2-15.1-9.9-30.6-14-46.5c-4.1-15.9-7.5-32.2-10.2-48.7c-2.7-16.5-4.7-33.2-6-50c-1.3-16.8-1.5-33.7-.6-50.6c.9-16.9 2.9-33.8 5.8-50.6c3-16.8 6.9-33.5 11.8-49.9c4.9-16.4 10.7-32.6 17.5-48.4c6.8-15.8 14.4-31.2 22.9-46.1c8.5-14.9 17.8-29.4 27.9-43.2c10.1-13.8 21.1-26.9 32.9-39.1c11.8-12.2 24.3-23.6 37.6-34.1c13.3-10.5 27.2-20.1 41.6-28.8c14.4-8.7 29.3-16.4 44.6-23.1c15.3-6.7 30.9-12.4 46.8-17c15.9-4.6 32-8.1 48.3-10.5c16.3-2.4 32.8-3.7 49.3-3.8c16.5-.1 33-.1 49.3 0c16.3 0 32.6.2 48.8.8c16.2.6 32.3 1.9 48.1 3.9c15.8 2 31.3 4.8 46.5 8.3c15.2 3.5 29.9 7.9 44.2 13.2c14.3 5.3 28.1 11.5 41.3 18.6c13.2 7.1 25.8 15.1 37.7 24c11.9 8.9 23 18.7 33.3 29.3c10.3 10.6 19.8 22.2 28.5 34.6c8.7 12.4 16.7 25.4 23.9 39.2c7.2 13.8 13.6 27.9 19.2 42.4c5.6 14.5 10.4 29.2 14.2 44.3c3.8 15.1 6.8 30.5 8.9 46.1c2.1 15.6 3.4 31.4 3.7 47.3c.3 16 .1 31.9-.6 47.8c-.8 15.9-2.3 31.7-4.7 47.4c-2.4 15.7-5.5 31.2-9.3 46.5c-3.8 15.3-8.5 30.3-13.9 44.9c-5.4 14.6-11.6 28.8-18.4 42.6c-6.8 13.8-14.3 27.1-22.5 39.9c-8.2 12.8-17.1 25.1-26.7 36.8c-9.6 11.7-19.8 22.9-30.6 33.5c-10.8 10.6-22.3 20.6-34.4 29.9c-12.1 9.3-24.8 17.9-38 25.7c-13.2 7.8-26.8 14.9-40.8 21.2c-14 6.3-28.4 11.8-43 16.4c-14.6 4.6-29.3 8.3-44.1 11.2c-14.8 2.9-29.6 5.1-44.4 6.6c-14.8 1.5-29.6 2.3-44.4 2.3z" />
+            </svg>
+          </a>
+        </div>
+      </footer>
+    );
+
+    // Home Page Component
+    const HomePage = ({ onNavigate }) => (
+      <>
+        <div className="text-center py-16 md:py-24 max-w-4xl mx-auto">
+          <h1 className="text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-[#d2b48c] to-white mb-4">
+            Elevate Your Scent Experience
+          </h1>
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
+            Discover our collection of designer Perfumes that last long and fetch compliments.
+            Luxury Designer Perfumes.
+          </p>
+          <div className="flex flex-wrap justify-center space-x-2 sm:space-x-4">
+            <button onClick={() => onNavigate('men')} className="py-3 px-6 sm:px-8 rounded-full font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl mb-2 sm:mb-0">
+              Men's Fragrances
+            </button>
+            <button onClick={() => onNavigate('women')} className="py-3 px-6 sm:px-8 rounded-full font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl mb-2 sm:mb-0">
+              Women's Fragrances
+            </button>
+            <button onClick={() => onNavigate('unisex')} className="py-3 px-6 sm:px-8 rounded-full font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+              Unisex Fragrances
+            </button>
+          </div>
+        </div>
+
+        <div className="my-16">
+          <h2 className="text-3xl font-bold text-center mb-10">Our Values</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: '✨', title: 'Luxury Quality', desc: 'Premium ingredients that rival designer fragrances.' },
+              { icon: '⏳', title: 'Long Lasting', desc: '12-18 hours of fragrance from a single application.' },
+              { icon: '💰', title: 'we Also have Affordable Ones Available', desc: 'Luxury scents and Affordable.' },
+            ].map((item, index) => (
+              <div key={index} className="bg-[#16161a] p-8 rounded-2xl border border-white/10 text-center shadow-lg transform transition-all duration-300 hover:scale-[1.02]">
+                <div className="text-5xl mb-4">{item.icon}</div>
+                <h3 className="text-xl font-semibold text-[#d2b48c]">{item.title}</h3>
+                <p className="mt-2 text-white/70">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+
+    // Fragrance Category Component
+    const FragranceCategoryPage = ({ title, products }) => {
+      const genderClasses = {
+        women: 'bg-pink-100 text-pink-800',
+        men: 'bg-blue-100 text-blue-800',
+        unisex: 'bg-purple-100 text-purple-800',
+      };
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-6">{title}</h1>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map(product => (
+              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover" />
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-[#d2b48c]">{product.name}</h3>
+                  <p className="text-sm text-white/70 mt-1 mb-4">{product.desc}</p>
+
+                  <div className="space-y-2">
+                    {product.sizes.map((sizeOption, index) => (
+                      <div key={index} className="flex items-center justify-between gap-4">
+                        <span className="text-sm text-white/80 font-medium">{sizeOption.size}:</span>
+                        <span className="text-lg font-bold text-[#d2b48c] flex-grow">{sizeOption.price}</span>
+                        <a
+                          href={`https://api.whatsapp.com/send?phone=256742450169&text=Hello! I would like to order the ${product.name} perfume in the ${sizeOption.size} for ${sizeOption.price}.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm py-2 px-4 rounded-full bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] font-medium transition-all duration-300 transform hover:scale-110"
+                        >
+                          Order
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    // New Search Results Component to display filtered products
+    const SearchResultsPage = ({ products, searchQuery }) => {
+      const genderClasses = {
+        women: 'bg-pink-300/20 text-pink-300',
+        men: 'bg-blue-300/20 text-blue-300',
+        unisex: 'bg-[#d2b48c]/20 text-[#d2b48c]',
+      };
+
+      return (
+        <>
+          <div className="text-center py-10">
+            <h1 className="text-4xl font-bold mb-2">Search Results for "{searchQuery}"</h1>
+            <p className="text-white/70">Found {products.length} {products.length === 1 ? 'fragrance' : 'fragrances'} matching your search.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.length > 0 ? (
+              products.map(product => (
+                <div key={product.id} className="bg-[#16161a] rounded-2xl overflow-hidden border border-white/10 shadow-lg group transform transition-all duration-300 hover:scale-105">
+                  <div className="relative aspect-square">
+                    <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover rounded-t-2xl" />
+                    <span className={`absolute top-4 right-4 text-xs font-semibold rounded-full py-1 px-3 ${genderClasses[product.gender]}`}>
+                      {product.gender.charAt(0).toUpperCase() + product.gender.slice(1)}
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-xl font-semibold text-[#d2b48c]">{product.name}</h3>
+                    <p className="text-sm text-white/70 mt-1 mb-4">{product.desc}</p>
+                    <div className="space-y-2">
+                      {product.sizes.map((sizeOption, index) => (
+                        <div key={index} className="flex items-center justify-between gap-4">
+                          <span className="text-sm text-white/80 font-medium">{sizeOption.size}:</span>
+                          <span className="text-lg font-bold text-[#d2b48c] flex-grow">{sizeOption.price}</span>
+                          <a
+                            href={`https://api.whatsapp.com/send?phone=256742450169&text=Hello! I would like to order the ${product.name} perfume in the ${sizeOption.size} for ${sizeOption.price}.`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm py-2 px-4 rounded-full bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] font-medium transition-all duration-300 transform hover:scale-110"
+                          >
+                            Order
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="md:col-span-4 text-center py-10">
+                <p className="text-white/50 text-lg">No fragrances found. Please try a different search term.</p>
+              </div>
+            )}
+          </div>
+        </>
+      );
+    };
+
+    // About Page Component
+    const AboutPage = () => (
+      <>
+        <div className="text-center py-10">
+          <h1 className="text-4xl font-bold mb-2">About KAALUXX</h1>
+          <p className="text-white/70">Crafting luxury fragrance experiences that are accessible to everyone.</p>
+        </div>
+
+        <div className="max-w-4xl mx-auto text-white/80 space-y-6">
+          <p>
+            Founded in 2020, DANIELS' began with a simple mission: to make luxury fragrances accessible without compromising on quality.
+            Our founder, who is passionate in the fragrance industry, noticed that many people loved designer scents
+            but couldn't find them locally.
+          </p>
+          <p>
+            We spent two years meticulously developing our collection of perfumes, sourcing the finest from around the world to
+            bring you popular designer fragrances that offer superior longevity and value.
+          </p>
+          <h2 className="text-3xl font-bold pt-6 text-white">Our Philosophy</h2>
+          <p>
+            We believe that everyone deserves to experience the confidence and joy that comes from wearing a beautiful fragrance. Our
+            alcohol perfume oils are concentrated to last longer on your skin, are gentle even for sensitive skin, and come in elegant,
+            original packaging.
+          </p>
+        </div>
+      </>
+    );
+
+    // Contact Page Component
+    const ContactPage = ({ onSubmit, showSuccess }) => {
+      const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+
+      const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      };
+
+      return (
+        <>
+          <div className="text-center py-10">
+            <h1 className="text-4xl font-bold mb-2">Get In Touch</h1>
+            <p className="text-white/70">We'd love to hear from you. Reach out with questions, feedback, or wholesale inquiries.</p>
+          </div>
+
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div className="bg-[#16161a] p-6 rounded-2xl border border-white/10 shadow-lg">
+                <h3 className="text-xl font-bold text-[#d2b48c] mb-2">📍 Visit Us</h3>
+                <p className="text-white/80 mb-2">
+                </p>
+                <p className="text-white/80">
+                  <a href="https://maps.app.goo.gl/sabCcrqfrHPEZn7p6?g_st=aw" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    Acacia mall opposite old Chillies Restaurant
+                  </a>
+                </p>
+              </div>
+              <div className="bg-[#16161a] p-6 rounded-2xl border border-white/10 shadow-lg">
+                <h3 className="text-xl font-bold text-[#d2b48c] mb-2">📞 Call Us</h3>
+                <p className="text-white/80">+256 742 450 169<br />Mon-Fri, 9AM-5PM EAT</p>
+              </div>
+              <div className="bg-[#16161a] p-6 rounded-2xl border border-white/10 shadow-lg">
+                <h3 className="text-xl font-bold text-[#d2b48c] mb-2">✉️ Email Us</h3>
+                <p className="text-white/80">hello@Daniels'.com<br />We respond within 24 hours</p>
+              </div>
+            </div>
+
+            <div className="bg-[#16161a] p-8 rounded-2xl border border-white/10 shadow-lg">
+              <h3 className="text-2xl font-bold mb-4">Send us a message</h3>
+              <form onSubmit={onSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium mb-1">Your Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full bg-[#111114] border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/40 transition-all duration-200"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium mb-1">Your Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full bg-[#111114] border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/40 transition-all duration-200"
+                    placeholder="Enter your email address"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium mb-1">Your Message</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows="4"
+                    className="w-full bg-[#111114] border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/40 transition-all duration-200"
+                    placeholder="Write your message here..."
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" className="w-full py-3 rounded-xl font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 hover:scale-[1.01] hover:shadow-xl">
+                  Send Message
+                </button>
+              </form>
+
+              {showSuccess && (
+                <div className="mt-4 p-4 text-center text-white bg-green-500 rounded-xl">
+                  Message sent successfully!
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  </script>
+</body>
+</html>
