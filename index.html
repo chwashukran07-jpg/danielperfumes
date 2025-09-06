@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DANIELS' PERFUMES</title>
+  <title>DANIEL PERFUMES</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter Font -->
@@ -111,7 +111,7 @@
       ]
       },
       {
-        id: 13, name: 'Santa Strawberry Nest Barbra', desc: 'Fruity, sweet, playful feminine fragrance.', gender: 'women', imageUrl: 'santa barbra', sizes: [
+        id: 13, name: 'Santa Strawberry Nest Barbra', desc: 'Fruity, sweet, playful feminine fragrance.', gender: 'women', imageUrl: 'images/santa barbra.jpg', sizes: [
         { size: '30ml', price: 'UGX 50,000' },
       ]
       },
@@ -292,50 +292,65 @@
     // Main App Component
     const App = () => {
       const [currentPage, setCurrentPage] = useState('home');
+      const [selectedProduct, setSelectedProduct] = useState(null);
       const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-      // New state to manage the search query
       const [searchQuery, setSearchQuery] = useState('');
 
       const handlePageChange = (page) => {
         setCurrentPage(page);
+        setSelectedProduct(null); // Clear selected product when changing main pages
         setSearchQuery(''); // Clear search query when navigating
         window.scrollTo(0, 0);
       };
 
-      // New function to handle search input changes
+      const handleProductSelect = (product) => {
+        setSelectedProduct(product);
+        window.scrollTo(0, 0);
+      };
+
+      const handleBack = () => {
+        if (selectedProduct) {
+          setSelectedProduct(null); // Go back from product detail to the list
+        } else if (searchQuery) {
+          setSearchQuery(''); // Go back from search results to the previous page
+        } else if (currentPage !== 'home') {
+          setCurrentPage('home'); // Go back from category to home
+        }
+        window.scrollTo(0, 0);
+      };
+
       const handleSearch = (query) => {
         setSearchQuery(query);
+        setSelectedProduct(null); // Clear selected product when searching
       };
 
       const handleSubmit = (e) => {
         e.preventDefault();
-        // Simulate form submission
         console.log('Form submitted!');
         setShowSuccessMessage(true);
-        setTimeout(() => setShowSuccessMessage(false), 5000); // Hide message after 5 seconds
+        setTimeout(() => setShowSuccessMessage(false), 5000);
       };
 
-      // Filter products based on the search query
       const filteredProducts = ALL_PRODUCTS.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
       const renderPage = () => {
-        // If there's a search query, render the search results page
-        if (searchQuery) {
-          return <SearchResultsPage products={filteredProducts} searchQuery={searchQuery} />;
+        if (selectedProduct) {
+          return <ProductDetailPage product={selectedProduct} />;
         }
-
-        // Otherwise, render the current page based on state
+        if (searchQuery) {
+          return <SearchResultsPage products={filteredProducts} searchQuery={searchQuery} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
+        }
         switch (currentPage) {
           case 'home':
             return <HomePage onNavigate={handlePageChange} />;
           case 'men':
-            return <FragranceCategoryPage title="Men's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'men')} />;
+            return <FragranceCategoryPage title="Men's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'men')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
           case 'women':
-            return <FragranceCategoryPage title="Women's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'women')} />;
+            return <FragranceCategoryPage title="Women's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'women')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
           case 'unisex':
-            return <FragranceCategoryPage title="Unisex Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'unisex')} />;
+            return <FragranceCategoryPage title="Unisex Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'unisex')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
           case 'about':
             return <AboutPage />;
           case 'contact':
@@ -345,9 +360,11 @@
         }
       };
 
+      const showBackButton = currentPage !== 'home' || !!selectedProduct || !!searchQuery;
+
       return (
         <div className="bg-[#0f0f12] text-[#f5f6f8] min-h-screen font-[Poppins]">
-          <Header onNavigate={handlePageChange} currentPage={currentPage} onSearch={handleSearch} searchQuery={searchQuery} />
+          <Header onNavigate={handlePageChange} currentPage={currentPage} onBack={handleBack} showBackButton={showBackButton} />
           <div className="container mx-auto px-4 py-8">
             {renderPage()}
           </div>
@@ -357,30 +374,41 @@
     };
 
     // Header Component
-    const Header = ({ onNavigate, currentPage, onSearch, searchQuery }) => {
+    const Header = ({ onNavigate, currentPage, onBack, showBackButton }) => {
       const [isMenuOpen, setIsMenuOpen] = useState(false);
+      
       const navItems = [
         { key: 'home', label: 'Home' },
         { key: 'men', label: 'Men' },
         { key: 'women', label: 'Women' },
         { key: 'unisex', label: 'Unisex' },
+        { key: 'about', label: 'About' },
+        { key: 'contact', label: 'Contact' },
       ];
 
       return (
-        <header className="bg-black text-white">
+        <header className="bg-black text-white sticky top-0 z-50 shadow-md">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img src="images/daniel logo.jpg" className="w-10 h-10 rounded-xl shadow-lg" alt="Daniels Perfumes Logo" />
-              <span className="font-semibold">DANIELS' PERFUMES</span>
+              {showBackButton ? (
+                <button onClick={onBack} className="p-2 -ml-2 text-white hover:bg-white/10 rounded-full" aria-label="Go back">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              ) : (
+                <img src="images/daniel logo.jpg" className="w-10 h-10 rounded-xl shadow-lg" alt="Daniels Perfumes Logo" />
+              )}
+              <span className="font-semibold">DANIEL PERFUMES</span>
             </div>
 
             {/* Desktop nav */}
-            <nav className="hidden sm:flex space-x-4">
+            <nav className="hidden sm:flex space-x-1">
               {navItems.map(item => (
                 <button
                   key={item.key}
                   onClick={() => onNavigate(item.key)}
-                  className={`px-3 py-2 rounded ${currentPage === item.key ? 'bg-white text-black' : 'hover:bg-white/10'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPage === item.key ? 'bg-white text-black' : 'text-white/80 hover:bg-white/10'}`}
                 >
                   {item.label}
                 </button>
@@ -404,7 +432,7 @@
                 <button
                   key={item.key}
                   onClick={() => { setIsMenuOpen(false); onNavigate(item.key); }}
-                  className="text-left px-3 py-2 rounded hover:bg-white/10 text-white"
+                  className={`text-left px-3 py-2 rounded transition-colors ${currentPage === item.key ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/10'}`}
                 >
                   {item.label}
                 </button>
@@ -415,10 +443,49 @@
       );
     };
 
+    // HomePage Component
+    const HomePage = ({ onNavigate }) => {
+      const categories = [
+        { name: 'For Him', key: 'men', imageUrl: 'images/for him.jpg' },
+        { name: 'For Her', key: 'women', imageUrl: 'images/for her.jpg' },
+        { name: 'For Everyone', key: 'unisex', imageUrl: 'images/for everyone.jpg' },
+      ];
+
+      return (
+        <>
+          <div className="text-center pt-12 pb-16">
+            <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
+              Find Your Signature Scent
+            </h1>
+            <p className="mt-4 text-lg text-white/70 max-w-2xl mx-auto">
+              Explore our curated collection of luxury-inspired perfumes. High-quality, long-lasting fragrances for every occasion.
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {categories.map(category => (
+                <div 
+                  key={category.key}
+                  onClick={() => onNavigate(category.key)}
+                  className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-lg transform transition-transform duration-300 hover:scale-105"
+                >
+                  <img src={category.imageUrl} alt={category.name} className="w-full h-80 object-cover" />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300 group-hover:bg-opacity-60">
+                    <h3 className="text-3xl font-bold text-white">{category.name}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      );
+    };
+
     // Footer Component
     const Footer = () => (
       <footer className="py-8 text-center text-white/50 text-sm">
-        <p>© {new Date().getFullYear()} DANIELS' PERFUMES – All rights reserved.</p>
+        <p>© {new Date().getFullYear()} DANIEL PERFUMES – All rights reserved.</p>
         <div className="mt-2 flex justify-center items-center">
           <a href="https://www.instagram.com/danielperfumes_ug?igsh=d3ppb2p1ZXg5MjVt" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#d2b48c] transition-colors">
             <svg
@@ -439,84 +506,74 @@
       </footer>
     );
 
-    // Home Page Component
-    const HomePage = ({ onNavigate }) => (
-      <>
-        <div className="text-center py-16 md:py-24 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-[#d2b48c] to-white mb-4">
-            Elevate Your Scent Experience
-          </h1>
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
-            Discover our collection of designer Perfumes that last long and fetch compliments.
-            Luxury Designer Perfumes.
-          </p>
-          <div className="flex flex-wrap justify-center space-x-2 sm:space-x-4">
-            <button onClick={() => onNavigate('men')} className="py-3 px-6 sm:px-8 rounded-full font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl mb-2 sm:mb-0">
-              Men's Fragrances
-            </button>
-            <button onClick={() => onNavigate('women')} className="py-3 px-6 sm:px-8 rounded-full font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl mb-2 sm:mb-0">
-              Women's Fragrances
-            </button>
-            <button onClick={() => onNavigate('unisex')} className="py-3 px-6 sm:px-8 rounded-full font-semibold bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
-              Unisex Fragrances
-            </button>
-          </div>
-        </div>
+    // Component for Category Navigation and Search
+    const CategoryHeader = ({ onNavigate, currentPage, onSearch, initialQuery = '' }) => {
+      const [localQuery, setLocalQuery] = useState(initialQuery);
 
-        <div className="my-16">
-          <h2 className="text-3xl font-bold text-center mb-10">Our Values</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: '✨', title: 'Luxury Quality', desc: 'Premium ingredients that rival designer fragrances.' },
-              { icon: '⏳', title: 'Long Lasting', desc: '12-18 hours of fragrance from a single application.' },
-              { icon: '💰', title: 'we Also have Affordable Ones Available', desc: 'Luxury scents and Affordable.' },
-            ].map((item, index) => (
-              <div key={index} className="bg-[#16161a] p-8 rounded-2xl border border-white/10 text-center shadow-lg transform transition-all duration-300 hover:scale-[1.02]">
-                <div className="text-5xl mb-4">{item.icon}</div>
-                <h3 className="text-xl font-semibold text-[#d2b48c]">{item.title}</h3>
-                <p className="mt-2 text-white/70">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </>
-    );
+      React.useEffect(() => {
+        setLocalQuery(initialQuery);
+      }, [initialQuery]);
 
-    // Fragrance Category Component
-    const FragranceCategoryPage = ({ title, products }) => {
-      const genderClasses = {
-        women: 'bg-pink-100 text-pink-800',
-        men: 'bg-blue-100 text-blue-800',
-        unisex: 'bg-purple-100 text-purple-800',
+      const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        onSearch(localQuery);
       };
 
+      const categoryNavItems = [
+        { key: 'men', label: 'Men' },
+        { key: 'women', label: 'Women' },
+        { key: 'unisex', label: 'Unisex' },
+      ];
+
       return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <nav className="bg-[#16161a] border border-white/10 rounded-t-xl flex justify-center">
+            {categoryNavItems.map(item => (
+              <button
+                key={item.key}
+                onClick={() => onNavigate(item.key)}
+                className={`flex-1 text-center py-3 px-2 text-sm font-medium transition-colors duration-200 ${currentPage === item.key ? 'bg-[#d2b48c] text-black' : 'text-white/80 hover:bg-white/10'}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div className="px-4 pb-4 pt-4 bg-[#16161a] border-x border-b border-white/10 rounded-b-xl">
+            <form onSubmit={handleSearchSubmit}>
+              <div className="relative">
+                <input
+                  type="search"
+                  value={localQuery}
+                  onChange={(e) => setLocalQuery(e.target.value)}
+                  placeholder="Search fragrances..."
+                  className="w-full bg-[#0f0f12] border border-white/10 rounded-xl py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/40 transition-all duration-200"
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // Fragrance Category Component
+    const FragranceCategoryPage = ({ title, products, onProductSelect, onSearch, onNavigate, currentPage }) => {
+      return (
+        <div className="max-w-6xl mx-auto">
+          <CategoryHeader onNavigate={onNavigate} currentPage={currentPage} onSearch={onSearch} />
           <h1 className="text-3xl font-bold mb-6">{title}</h1>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map(product => (
-              <div key={product.id} className="bg-[#16161a] rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 text-left">
+              <div 
+                key={product.id} 
+                onClick={() => onProductSelect(product)}
+                className="bg-[#16161a] rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 text-left cursor-pointer"
+              >
                 <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover" />
                 <div className="p-4">
                   <h3 className="text-xl font-semibold text-[#d2b48c]">{product.name}</h3>
-                  <p className="text-sm text-white/70 mt-1 mb-4">{product.desc}</p>
-
-                  <div className="space-y-2">
-                    {product.sizes.map((sizeOption, index) => (
-                      <div key={index} className="flex items-center justify-between gap-4">
-                        <span className="text-sm text-white/80 font-medium">{sizeOption.size}:</span>
-                        <span className="text-lg font-bold text-[#d2b48c] flex-grow">{sizeOption.price}</span>
-                        <a
-                          href={`https://api.whatsapp.com/send?phone=256742450169&text=Hello! I would like to order the ${product.name} perfume in the ${sizeOption.size} for ${sizeOption.price}.`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm py-2 px-4 rounded-full bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] font-medium transition-all duration-300 transform hover:scale-110"
-                        >
-                          Order
-                        </a>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
             ))}
@@ -525,8 +582,47 @@
       );
     };
 
+    // New Product Detail Page Component
+    const ProductDetailPage = ({ product }) => {
+      if (!product) return null;
+
+      return (
+        <div className="max-w-4xl mx-auto py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            <div>
+              <img src={product.imageUrl} alt={product.name} className="w-full rounded-lg shadow-lg object-cover aspect-square" />
+            </div>
+            <div className="flex flex-col justify-center">
+              <h1 className="text-4xl font-bold text-[#d2b48c] mb-4">{product.name}</h1>
+              <p className="text-white/70 mb-6">{product.desc}</p>
+              
+              <div className="space-y-3">
+                <h3 className="text-xl font-semibold text-white mb-2">Available Sizes</h3>
+                {product.sizes.map((sizeOption, index) => (
+                  <div key={index} className="flex items-center justify-between gap-4 bg-[#16161a] p-4 rounded-lg border border-white/10">
+                    <div>
+                      <span className="text-md text-white/80 font-medium">{sizeOption.size}</span>
+                      <span className="block text-lg font-bold text-[#d2b48c]">{sizeOption.price}</span>
+                    </div>
+                    <a
+                      href={`https://api.whatsapp.com/send?phone=256742450169&text=Hello! I would like to order the ${product.name} perfume in the ${sizeOption.size} for ${sizeOption.price}.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm py-2 px-5 rounded-full bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] font-semibold transition-all duration-300 transform hover:scale-110 whitespace-nowrap"
+                    >
+                      Order Now
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     // New Search Results Component to display filtered products
-    const SearchResultsPage = ({ products, searchQuery }) => {
+    const SearchResultsPage = ({ products, searchQuery, onProductSelect, onSearch, onNavigate, currentPage }) => {
       const genderClasses = {
         women: 'bg-pink-300/20 text-pink-300',
         men: 'bg-blue-300/20 text-blue-300',
@@ -534,16 +630,21 @@
       };
 
       return (
-        <>
-          <div className="text-center py-10">
-            <h1 className="text-4xl font-bold mb-2">Search Results for "{searchQuery}"</h1>
-            <p className="text-white/70">Found {products.length} {products.length === 1 ? 'fragrance' : 'fragrances'} matching your search.</p>
+        <div className="max-w-6xl mx-auto">
+          <CategoryHeader onNavigate={onNavigate} currentPage={currentPage} onSearch={onSearch} initialQuery={searchQuery} />
+          <div className="text-center py-2">
+            <h1 className="text-4xl font-bold mb-2">Search Results</h1>
+            <p className="text-white/70">Found {products.length} {products.length === 1 ? 'fragrance' : 'fragrances'} matching "{searchQuery}"</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
             {products.length > 0 ? (
               products.map(product => (
-                <div key={product.id} className="bg-[#16161a] rounded-2xl overflow-hidden border border-white/10 shadow-lg group transform transition-all duration-300 hover:scale-105">
+                <div 
+                  key={product.id} 
+                  onClick={() => onProductSelect(product)}
+                  className="bg-[#16161a] rounded-2xl overflow-hidden border border-white/10 shadow-lg group transform transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
                   <div className="relative aspect-square">
                     <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover rounded-t-2xl" />
                     <span className={`absolute top-4 right-4 text-xs font-semibold rounded-full py-1 px-3 ${genderClasses[product.gender]}`}>
@@ -552,23 +653,6 @@
                   </div>
                   <div className="p-4">
                     <h3 className="text-xl font-semibold text-[#d2b48c]">{product.name}</h3>
-                    <p className="text-sm text-white/70 mt-1 mb-4">{product.desc}</p>
-                    <div className="space-y-2">
-                      {product.sizes.map((sizeOption, index) => (
-                        <div key={index} className="flex items-center justify-between gap-4">
-                          <span className="text-sm text-white/80 font-medium">{sizeOption.size}:</span>
-                          <span className="text-lg font-bold text-[#d2b48c] flex-grow">{sizeOption.price}</span>
-                          <a
-                            href={`https://api.whatsapp.com/send?phone=256742450169&text=Hello! I would like to order the ${product.name} perfume in the ${sizeOption.size} for ${sizeOption.price}.`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm py-2 px-4 rounded-full bg-gradient-to-r from-[#d2b48c] to-[#b89972] text-[#111] font-medium transition-all duration-300 transform hover:scale-110"
-                          >
-                            Order
-                          </a>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 </div>
               ))
@@ -578,7 +662,7 @@
               </div>
             )}
           </div>
-        </>
+        </div>
       );
     };
 
@@ -586,7 +670,7 @@
     const AboutPage = () => (
       <>
         <div className="text-center py-10">
-          <h1 className="text-4xl font-bold mb-2">About KAALUXX</h1>
+          <h1 className="text-4xl font-bold mb-2">About DANIEL PERFUMES</h1>
           <p className="text-white/70">Crafting luxury fragrance experiences that are accessible to everyone.</p>
         </div>
 
