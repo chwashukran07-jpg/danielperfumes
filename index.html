@@ -332,15 +332,22 @@
 
         if (path.startsWith('/products/')) {
           const productId = parseInt(path.split('/')[2], 10);
-          const product = ALL_PRODUCTS.find(p => p.id === productId);
-          if (product) {
-            setSelectedProduct(product);
-            // Determine a sensible currentPage when landing directly on a product
-            const page = product.gender === 'men' ? 'men' : product.gender === 'women' ? 'women' : 'unisex';
-            setCurrentPage(page);
+          // Check if productId is a valid number
+          if (!isNaN(productId)) {
+            const product = ALL_PRODUCTS.find(p => p.id === productId);
+            if (product) {
+              setSelectedProduct(product);
+              const page = product.gender === 'men' ? 'men' : product.gender === 'women' ? 'women' : 'unisex';
+              setCurrentPage(page);
+            } else {
+              // Product not found, redirect to home
+              window.history.replaceState({ page: 'home' }, '', '/');
+              setCurrentPage('home');
+              setSelectedProduct(null);
+            }
           } else {
-            // Product not found, redirect to home
-            history.replaceState({ page: 'home' }, '', '/');
+             // Invalid product ID in URL, redirect to home
+            window.history.replaceState({ page: 'home' }, '', '/');
             setCurrentPage('home');
             setSelectedProduct(null);
           }
@@ -352,10 +359,7 @@
       };
 
       React.useEffect(() => {
-        // Handle browser back/forward navigation
         window.addEventListener('popstate', syncStateFromURL);
-        
-        // Set initial state from URL on load
         syncStateFromURL();
 
         return () => {
@@ -366,7 +370,7 @@
 
       const handlePageChange = (page) => {
         const url = page === 'home' ? '/' : `/${page}`;
-        history.pushState({ page }, '', url);
+        window.history.pushState({ page }, '', url);
         setCurrentPage(page);
         setSelectedProduct(null);
         setSearchQuery('');
@@ -374,7 +378,7 @@
       };
 
       const handleProductSelect = (product) => {
-        history.pushState({ productId: product.id }, '', `/products/${product.id}`);
+        window.history.pushState({ productId: product.id }, '', `/products/${product.id}`);
         setSelectedProduct(product);
         window.scrollTo(0, 0);
       };
@@ -390,10 +394,11 @@
         } else {
           params.delete('q');
         }
-        const newPath = `${window.location.pathname}?${params.toString()}`;
-        history.pushState({ page: currentPage, query }, '', newPath);
+        // Use replaceState for search to avoid polluting history with every keystroke
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState({ page: currentPage, query }, '', newUrl);
         setSearchQuery(query);
-        setSelectedProduct(null);
+        setSelectedProduct(null); // Clear product selection on new search
       };
 
       const handleSubmit = (e) => {
