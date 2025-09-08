@@ -324,32 +324,76 @@
       const [showSuccessMessage, setShowSuccessMessage] = useState(false);
       const [searchQuery, setSearchQuery] = useState('');
 
+      const syncStateFromURL = () => {
+        const path = window.location.pathname;
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get('q') || '';
+        setSearchQuery(query);
+
+        if (path.startsWith('/products/')) {
+          const productId = parseInt(path.split('/')[2], 10);
+          const product = ALL_PRODUCTS.find(p => p.id === productId);
+          if (product) {
+            setSelectedProduct(product);
+            // Determine a sensible currentPage when landing directly on a product
+            const page = product.gender === 'men' ? 'men' : product.gender === 'women' ? 'women' : 'unisex';
+            setCurrentPage(page);
+          } else {
+            // Product not found, redirect to home
+            history.replaceState({ page: 'home' }, '', '/');
+            setCurrentPage('home');
+            setSelectedProduct(null);
+          }
+        } else {
+          const page = path.substring(1) || 'home';
+          setCurrentPage(page);
+          setSelectedProduct(null);
+        }
+      };
+
+      React.useEffect(() => {
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', syncStateFromURL);
+        
+        // Set initial state from URL on load
+        syncStateFromURL();
+
+        return () => {
+          window.removeEventListener('popstate', syncStateFromURL);
+        };
+      }, []);
+
+
       const handlePageChange = (page) => {
+        const url = page === 'home' ? '/' : `/${page}`;
+        history.pushState({ page }, '', url);
         setCurrentPage(page);
-        setSelectedProduct(null); // Clear selected product when changing main pages
-        setSearchQuery(''); // Clear search query when navigating
+        setSelectedProduct(null);
+        setSearchQuery('');
         window.scrollTo(0, 0);
       };
 
       const handleProductSelect = (product) => {
+        history.pushState({ productId: product.id }, '', `/products/${product.id}`);
         setSelectedProduct(product);
         window.scrollTo(0, 0);
       };
 
       const handleBack = () => {
-        if (selectedProduct) {
-          setSelectedProduct(null); // Go back from product detail to the list
-        } else if (searchQuery) {
-          setSearchQuery(''); // Go back from search results to the previous page
-        } else if (currentPage !== 'home') {
-          setCurrentPage('home'); // Go back from category to home
-        }
-        window.scrollTo(0, 0);
+        window.history.back();
       };
 
       const handleSearch = (query) => {
+        const params = new URLSearchParams(window.location.search);
+        if (query) {
+          params.set('q', query);
+        } else {
+          params.delete('q');
+        }
+        const newPath = `${window.location.pathname}?${params.toString()}`;
+        history.pushState({ page: currentPage, query }, '', newPath);
         setSearchQuery(query);
-        setSelectedProduct(null); // Clear selected product when searching
+        setSelectedProduct(null);
       };
 
       const handleSubmit = (e) => {
@@ -388,7 +432,7 @@
         }
       };
 
-      const showBackButton = currentPage !== 'home' || !!selectedProduct || !!searchQuery;
+      const showBackButton = currentPage !== 'home' || !!selectedProduct || !!searchQuery || window.location.pathname !== '/';
 
       return (
         <div className="bg-[#0f0f12] text-[#f5f6f8] min-h-screen font-[Poppins]">
