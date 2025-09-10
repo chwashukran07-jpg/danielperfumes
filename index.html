@@ -31,6 +31,82 @@
 </head>
 <body>
   <div id="root"></div>
+  <!-- History helper: paste this BEFORE your type="text/babel" script -->
+<script>
+  (function () {
+    // Attach to window so the Babel React script can call it.
+    window.setupHistory = function setupHistory({ onStateChange }) {
+      if (typeof onStateChange !== 'function') {
+        throw new Error('setupHistory requires onStateChange callback');
+      }
+
+      // Convert location.hash into a normalized state object
+      function stateFromHash() {
+        const raw = (location.hash || '').slice(1); // remove '#'
+        if (!raw) return { page: 'home' };
+
+        // patterns we will support:
+        //  - "#men", "#women", "#unisex", "#about", "#contact"
+        //  - "#product-42"  -> product detail page for id 42
+        //  - "#search-encodedQuery"  -> search page
+        if (raw.startsWith('product-')) {
+          const id = parseInt(raw.split('-')[1], 10);
+          return { page: 'product', productId: Number.isFinite(id) ? id : null };
+        }
+        if (raw.startsWith('search-')) {
+          const q = decodeURIComponent(raw.slice('search-'.length));
+          return { page: 'search', query: q };
+        }
+        return { page: raw };
+      }
+
+      // Push a new history entry and update the URL hash for deep-linking
+      function push(state) {
+        const page = state.page || 'home';
+        let urlHash = '#' + page;
+        if (state.page === 'product' && state.productId) urlHash = '#product-' + state.productId;
+        if (state.page === 'search' && state.query) urlHash = '#search-' + encodeURIComponent(state.query);
+
+        // push structured state (keeps the real data in history.state)
+        history.pushState(state, '', urlHash);
+      }
+
+      // Replace the current history entry (used at initialization to avoid duplicates)
+      function replace(state) {
+        const page = state.page || 'home';
+        let urlHash = '#' + page;
+        if (state.page === 'product' && state.productId) urlHash = '#product-' + state.productId;
+        if (state.page === 'search' && state.query) urlHash = '#search-' + encodeURIComponent(state.query);
+
+        history.replaceState(state, '', urlHash);
+      }
+
+      // Handle the user pressing back/forward
+      function onPop(e) {
+        const s = e.state || stateFromHash();
+        onStateChange(s);
+      }
+
+      window.addEventListener('popstate', onPop);
+
+      // Initialize: prefer history.state, else use hash fallback
+      const initial = history.state || stateFromHash();
+      replace(initial);
+      // notify app of initial state
+      onStateChange(initial);
+
+      // Return API to the app
+      return {
+        push,
+        replace,
+        cleanup() {
+          window.removeEventListener('popstate', onPop);
+        }
+      };
+    };
+  })();
+</script>
+
 
   <script type="text/babel">
     const { useState } = React;
@@ -319,86 +395,134 @@
     ];
     // Main App Component
     const App = () => {
-      const [currentPage, setCurrentPage] = useState('home');
-      const [selectedProduct, setSelectedProduct] = useState(null);
-      const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-      const [searchQuery, setSearchQuery] = useState('');
+      function App() {
+  const [currentPage, setCurrentPage] = React.useState("home");
+  const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-      const handlePageChange = (page) => {
-        setCurrentPage(page);
-        setSelectedProduct(null); // Clear selected product when changing main pages
-        setSearchQuery(''); // Clear search query when navigating
-        window.scrollTo(0, 0);
-      };
+  // --- Navigation Handlers with History API ---
 
-      const handleProductSelect = (product) => {
-        setSelectedProduct(product);
-        window.scrollTo(0, 0);
-      };
+  // Switch between Home, Men, Women, Unisex, About, Contact
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setSelectedProduct(null);
+    setSearchQuery("");
+    window.scrollTo(0, 0);
 
-      const handleBack = () => {
-        if (selectedProduct) {
-          setSelectedProduct(null); // Go back from product detail to the list
-        } else if (searchQuery) {
-          setSearchQuery(''); // Go back from search results to the previous page
-        } else if (currentPage !== 'home') {
-          setCurrentPage('home'); // Go back from category to home
-        }
-        window.scrollTo(0, 0);
-      };
+    history.pushState({ page }, "", "#" + page);
+  };
 
-      const handleSearch = (query) => {
-        setSearchQuery(query);
-        setSelectedProduct(null); // Clear selected product when searching
-      };
+  // Click on product card -> product detail page
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product);
+    window.scrollTo(0, 0);
 
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted!');
-        setShowSuccessMessage(true);
-        setTimeout(() => setShowSuccessMessage(false), 5000);
-      };
+    history.pushState(
+      { page: "product", productId: product.id },
+      "",
+      "#product-" + product.id
+    );
+  };
 
-      const filteredProducts = ALL_PRODUCTS.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  // Perform a search
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setSelectedProduct(null);
 
-      const renderPage = () => {
-        if (selectedProduct) {
-          return <ProductDetailPage product={selectedProduct} />;
-        }
-        if (searchQuery) {
-          return <SearchResultsPage products={filteredProducts} searchQuery={searchQuery} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;}
-        switch (currentPage) {
-          case 'home':
-            return <HomePage onNavigate={handlePageChange} />;
-          case 'men':
-            return <FragranceCategoryPage title="Men's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'men')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
-          case 'women':
-            return <FragranceCategoryPage title="Women's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'women')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
-          case 'unisex':
-            return <FragranceCategoryPage title="Unisex Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'unisex')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
-          case 'about':
-            return <AboutPage />;
-          case 'contact':
-            return <ContactPage onSubmit={handleSubmit} showSuccess={showSuccessMessage} />;
-          default:
-            return <HomePage onNavigate={handlePageChange} />;
-        }
-      };
+    history.pushState(
+      { page: "search", query },
+      "",
+      "#search-" + encodeURIComponent(query)
+    );
+  };
 
-      const showBackButton = currentPage !== 'home' || !!selectedProduct || !!searchQuery;
+  // Back button inside app
+  const handleBack = () => {
+    history.back(); // same as phone/browser back
+  };
 
-      return (
-        <div className="bg-[#0f0f12] text-[#f5f6f8] min-h-screen font-[Poppins]">
-          <Header onNavigate={handlePageChange} currentPage={currentPage} onBack={handleBack} showBackButton={showBackButton} />
-          <div className="container mx-auto px-4 py-8">
-            {renderPage()}
-          </div>
-          <Footer />
-        </div>
-      );
+  // --- Listen for browser back/forward buttons ---
+  React.useEffect(() => {
+    const onPop = (event) => {
+      const state = event.state;
+
+      if (!state) {
+        setCurrentPage("home");
+        setSelectedProduct(null);
+        setSearchQuery("");
+        return;
+      }
+
+      if (state.page === "product") {
+        const prod = ALL_PRODUCTS.find((p) => p.id === state.productId) || null;
+        setSelectedProduct(prod);
+      } else if (state.page === "search") {
+        setSearchQuery(state.query || "");
+        setSelectedProduct(null);
+        setCurrentPage("home");
+      } else {
+        setCurrentPage(state.page);
+        setSelectedProduct(null);
+        setSearchQuery("");
+      }
     };
+
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // --- Render ---
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header
+        onNavigate={handlePageChange}
+        onSearch={handleSearch}
+        onBack={handleBack}
+        showBack={!!selectedProduct}
+      />
+
+      <main className="flex-1 p-6">
+        {selectedProduct ? (
+          <ProductDetail product={selectedProduct} />
+        ) : (
+          <>
+            {currentPage === "home" && (
+              <>
+                <Section title="Men's Fragrances" products={MENS_FRAGRANCES} onSelect={handleProductSelect} />
+                <Section title="Women's Fragrances" products={WOMENS_FRAGRANCES} onSelect={handleProductSelect} />
+                <Section title="Unisex Fragrances" products={UNISEX_FRAGRANCES} onSelect={handleProductSelect} />
+              </>
+            )}
+
+            {currentPage === "men" && (
+              <Section title="Men's Fragrances" products={MENS_FRAGRANCES} onSelect={handleProductSelect} />
+            )}
+            {currentPage === "women" && (
+              <Section title="Women's Fragrances" products={WOMENS_FRAGRANCES} onSelect={handleProductSelect} />
+            )}
+            {currentPage === "unisex" && (
+              <Section title="Unisex Fragrances" products={UNISEX_FRAGRANCES} onSelect={handleProductSelect} />
+            )}
+
+            {currentPage === "about" && <About />}
+            {currentPage === "contact" && <Contact />}
+          </>
+        )}
+
+        {searchQuery && !selectedProduct && (
+          <SearchResults
+            query={searchQuery}
+            products={ALL_PRODUCTS}
+            onSelect={handleProductSelect}
+          />
+        )}
+      </main>
+
+      <Footer />
+    </div>
+   );
+ }
+};
 
     // Header Component
     const Header = ({ onNavigate, currentPage, onBack, showBackButton }) => {
