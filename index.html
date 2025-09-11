@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DANIEL PERFUMES</title>
-  <link rel="icon" href="images/daniel-logo.jpg" type="image/jpeg">
+  <title>Fragrance Island</title>
+  <link rel="icon" href="images/daniel logo.jpg" type="image/jpeg">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter Font -->
@@ -31,82 +31,6 @@
 </head>
 <body>
   <div id="root"></div>
-  <!-- History helper: paste this BEFORE your type="text/babel" script -->
-<script>
-  (function () {
-    // Attach to window so the Babel React script can call it.
-    window.setupHistory = function setupHistory({ onStateChange }) {
-      if (typeof onStateChange !== 'function') {
-        throw new Error('setupHistory requires onStateChange callback');
-      }
-
-      // Convert location.hash into a normalized state object
-      function stateFromHash() {
-        const raw = (location.hash || '').slice(1); // remove '#'
-        if (!raw) return { page: 'home' };
-
-        // patterns we will support:
-        //  - "#men", "#women", "#unisex", "#about", "#contact"
-        //  - "#product-42"  -> product detail page for id 42
-        //  - "#search-encodedQuery"  -> search page
-        if (raw.startsWith('product-')) {
-          const id = parseInt(raw.split('-')[1], 10);
-          return { page: 'product', productId: Number.isFinite(id) ? id : null };
-        }
-        if (raw.startsWith('search-')) {
-          const q = decodeURIComponent(raw.slice('search-'.length));
-          return { page: 'search', query: q };
-        }
-        return { page: raw };
-      }
-
-      // Push a new history entry and update the URL hash for deep-linking
-      function push(state) {
-        const page = state.page || 'home';
-        let urlHash = '#' + page;
-        if (state.page === 'product' && state.productId) urlHash = '#product-' + state.productId;
-        if (state.page === 'search' && state.query) urlHash = '#search-' + encodeURIComponent(state.query);
-
-        // push structured state (keeps the real data in history.state)
-        history.pushState(state, '', urlHash);
-      }
-
-      // Replace the current history entry (used at initialization to avoid duplicates)
-      function replace(state) {
-        const page = state.page || 'home';
-        let urlHash = '#' + page;
-        if (state.page === 'product' && state.productId) urlHash = '#product-' + state.productId;
-        if (state.page === 'search' && state.query) urlHash = '#search-' + encodeURIComponent(state.query);
-
-        history.replaceState(state, '', urlHash);
-      }
-
-      // Handle the user pressing back/forward
-      function onPop(e) {
-        const s = e.state || stateFromHash();
-        onStateChange(s);
-      }
-
-      window.addEventListener('popstate', onPop);
-
-      // Initialize: prefer history.state, else use hash fallback
-      const initial = history.state || stateFromHash();
-      replace(initial);
-      // notify app of initial state
-      onStateChange(initial);
-
-      // Return API to the app
-      return {
-        push,
-        replace,
-        cleanup() {
-          window.removeEventListener('popstate', onPop);
-        }
-      };
-    };
-  })();
-</script>
-
 
   <script type="text/babel">
     const { useState } = React;
@@ -365,7 +289,7 @@
         { size: '100ml', price: 'UGX 160,000' }
       ]
         },
-        { id: 48, name: 'Tom Ford Ombré Leather', desc: 'A deeply textural scent that imprints you with a tactile sensuality.', gender: 'unisex', imageUrl: 'images/images/tom-ford-ombré-Leather (2).jpg.jpg', sizes: [
+        { id: 48, name: 'Tom Ford Ombré Leather', desc: 'A deeply textural scent that imprints you with a tactile sensuality.', gender: 'unisex', imageUrl: 'images/tom-ford-ombré-Leather (2).jpg', sizes: [
           { size: '100ml', price: 'UGX 160,000' }
      ]  
          },
@@ -375,8 +299,6 @@
         { id: 52, name: 'Jean Paul Gaultier Le Male Le Parfum', desc: 'An intense and elegant oriental woody fragrance.', gender: 'men', imageUrl: 'images/jean-paul-gaultier-le-male-le-parfum.jpg', sizes: [{ size: '125ml', price: 'UGX 160,000' }] },
         { id: 53, name: 'Dolce & Gabbana The One EDP', desc: 'A charismatic and seductive fragrance with a spicy, oriental signature.', gender: 'men', imageUrl: 'images/dolce-&-gabbana-the-one-edp.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
         { id: 54, name: 'Maison Margiela By the Fireplace', desc: 'A warm and spicy scent that evokes the comfort of a crackling fire.', gender: 'unisex', imageUrl: 'images/maison-margiela-by-the-fireplace.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
-        { id: 55, name: 'Parfums de Marly Layton', desc: 'An addictive and sensual fragrance with notes of vanilla and apple.', gender: 'unisex', imageUrl: 'images/parfums-de-marly-lyton.jpg', sizes: [{ size: '125ml', price: 'UGX 160,000' }] },
-        { id: 56, name: 'Creed Green Irish Tweed', desc: 'A classic and sophisticated fragrance that evokes the Irish countryside.', gender: 'men', imageUrl: 'images/creed-green-irish-tweed.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
         { id: 57, name: 'Baccarat Rouge 540', desc: 'A luminous and intense amber floral and woody fragrance.', gender: 'unisex', imageUrl: 'images/baccarat-rouge-540.jpg', sizes: [{ size: '70ml', price: 'UGX 160,000' }] },
         { id: 58, name: 'Yves Saint Laurent Black Opium', desc: 'An addictive gourmand floral with notes of black coffee and vanilla.', gender: 'women', imageUrl: 'images/yves-saint-laurent-black-opium.jpg', sizes: [{ size: '90ml', price: 'UGX 160,000' }] },
         { id: 59, name: 'Marc Jacobs Daisy', desc: 'A charmingly simple with a signature quality, transports you to a place that is optimistic and beautiful.', gender: 'women', imageUrl: 'images/marc-jacobs-daisy.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
@@ -386,143 +308,169 @@
         { id: 63, name: 'Gucci Bloom', desc: 'A rich white floral scent that transports to a beautiful garden.', gender: 'women', imageUrl: 'images/gucci-bloom.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
         { id: 64, name: 'Mugler Alien', desc: 'A mysterious and radiant fragrance with notes of jasmine and amber.', gender: 'women', imageUrl: 'images/mugler-alein.jpg', sizes: [{ size: '90ml', price: 'UGX 160,000' }] },
         { id: 65, name: 'Dolce & Gabbana Light Blue', desc: 'A fresh, fruity-floral scent that evokes the spirit of the Sicilian summer.', gender: 'women', imageUrl: 'images/dolce-&-gabbana-light-blue.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
-        { id: 66, name: 'Kilian Love, Don\'t Be Shy', desc: 'A sweet and gourmand fragrance with marshmallow and orange blossom.', gender: 'unisex', imageUrl: 'images/images/kilian-love-dont-be-shy.jpg.jpg', sizes: [{ size: '50ml', price: 'UGX 160,000' }] },
+        { id: 66, name: 'Kilian Love, Don\'t Be Shy', desc: 'A sweet and gourmand fragrance with marshmallow and orange blossom.', gender: 'unisex', imageUrl: 'images/kilian-love-dont-be-shy.jpg', sizes: [{ size: '50ml', price: 'UGX 160,000' }] },
         { id: 67, name: 'Xerjoff Naxos', desc: 'A tribute to Sicily with notes of honey, tobacco, and lavender.', gender: 'unisex', imageUrl: 'images/xerjoff-naxos.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
         { id: 68, name: 'Mancera Cedrat Boise', desc: 'A vibrant and sparkling fragrance with citrus, woods, and leather.', gender: 'unisex', imageUrl: 'images/mancera-cedrat-boise.jpg', sizes: [{ size: '120ml', price: 'UGX 160,000' }] },
-        { id: 69, name: 'Terre-dhermès', desc: 'A woody, vegetal, and mineral fragrance for men.', gender: 'men', imageUrl: 'images/terre-dhermes.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
+        { id: 69, name: 'Terre d\'Hermès', desc: 'A woody, vegetal, and mineral fragrance for men.', gender: 'men', imageUrl: 'images/Terre-dhermes.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
         { id: 70, name: 'Versace Dylan Blue', desc: 'A strong, masculine fragrance with fresh, Mediterranean notes.', gender: 'men', imageUrl: 'images/versace-dylan-blue.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
         { id: 71, name: 'Paco Rabanne 1 Million', desc: 'A flamboyant and audacious fragrance with notes of leather and blood mandarin.', gender: 'men', imageUrl: 'images/paco-rabanne-1-million.jpg', sizes: [{ size: '100ml', price: 'UGX 160,000' }] },
     ];
-    // Main App Component
+    // Main App Component (fixed + History API)
     const App = () => {
-      function App() {
-  const [currentPage, setCurrentPage] = React.useState("home");
-  const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [searchQuery, setSearchQuery] = React.useState("");
+      const [currentPage, setCurrentPage] = useState('home');
+      const [selectedProduct, setSelectedProduct] = useState(null);
+      const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+      const [searchQuery, setSearchQuery] = useState('');
 
-  // --- Navigation Handlers with History API ---
+      // helper to read state from hash on initial load or direct link
+      function stateFromHash() {
+        const raw = (location.hash || '').slice(1); // remove '#'
+        if (!raw) return { page: 'home' };
 
-  // Switch between Home, Men, Women, Unisex, About, Contact
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    setSelectedProduct(null);
-    setSearchQuery("");
-    window.scrollTo(0, 0);
-
-    history.pushState({ page }, "", "#" + page);
-  };
-
-  // Click on product card -> product detail page
-  const handleProductSelect = (product) => {
-    setSelectedProduct(product);
-    window.scrollTo(0, 0);
-
-    history.pushState(
-      { page: "product", productId: product.id },
-      "",
-      "#product-" + product.id
-    );
-  };
-
-  // Perform a search
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    setSelectedProduct(null);
-
-    history.pushState(
-      { page: "search", query },
-      "",
-      "#search-" + encodeURIComponent(query)
-    );
-  };
-
-  // Back button inside app
-  const handleBack = () => {
-    history.back(); // same as phone/browser back
-  };
-
-  // --- Listen for browser back/forward buttons ---
-  React.useEffect(() => {
-    const onPop = (event) => {
-      const state = event.state;
-
-      if (!state) {
-        setCurrentPage("home");
-        setSelectedProduct(null);
-        setSearchQuery("");
-        return;
+        if (raw.startsWith('product-')) {
+          const id = parseInt(raw.split('-')[1], 10);
+          return { page: 'product', productId: Number.isFinite(id) ? id : null };
+        }
+        if (raw.startsWith('search-')) {
+          const q = decodeURIComponent(raw.slice('search-'.length));
+          return { page: 'search', query: q };
+        }
+        return { page: raw };
       }
 
-      if (state.page === "product") {
-        const prod = ALL_PRODUCTS.find((p) => p.id === state.productId) || null;
-        setSelectedProduct(prod);
-      } else if (state.page === "search") {
-        setSearchQuery(state.query || "");
-        setSelectedProduct(null);
-        setCurrentPage("home");
-      } else {
-        setCurrentPage(state.page);
-        setSelectedProduct(null);
-        setSearchQuery("");
+      // Update app state from a structured state object (from history.state or hash)
+      function applyState(state) {
+        if (!state) {
+          setCurrentPage('home');
+          setSelectedProduct(null);
+          setSearchQuery('');
+          return;
+        }
+
+        if (state.page === 'product') {
+          const prod = ALL_PRODUCTS.find((p) => p.id === state.productId) || null;
+          setSelectedProduct(prod);
+          setCurrentPage('home'); // keep page as home but show product detail
+          setSearchQuery('');
+        } else if (state.page === 'search') {
+          setSearchQuery(state.query || '');
+          setSelectedProduct(null);
+          setCurrentPage('home');
+        } else {
+          setCurrentPage(state.page || 'home');
+          setSelectedProduct(null);
+          setSearchQuery('');
+        }
       }
+
+      // --- Navigation Handlers with History API ---
+
+      // Switch between Home, Men, Women, Unisex, About, Contact
+      const handlePageChange = (page) => {
+        setCurrentPage(page);
+        setSelectedProduct(null); // Clear any product detail
+        setSearchQuery('');
+        window.scrollTo(0, 0);
+
+        // push structured state
+        const state = { page };
+        let urlHash = '#' + page;
+        history.pushState(state, '', urlHash);
+      };
+
+      // Click on product card -> product detail page
+      const handleProductSelect = (product) => {
+        setSelectedProduct(product);
+        window.scrollTo(0, 0);
+
+        const state = { page: 'product', productId: product.id };
+        history.pushState(state, '', '#product-' + product.id);
+      };
+
+      // Perform a search
+      const handleSearch = (query) => {
+        setSearchQuery(query);
+        setSelectedProduct(null);
+
+        const state = { page: 'search', query };
+        history.pushState(state, '', '#search-' + encodeURIComponent(query));
+      };
+
+      // Back button inside app
+      const handleBack = () => {
+        history.back(); // same as phone/browser back
+      };
+
+      // Form submit handler for contact page
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        setShowSuccessMessage(true);
+        setTimeout(() => setShowSuccessMessage(false), 5000);
+      };
+
+      // --- Listen for browser back/forward buttons and initialize from URL/hash ---
+      React.useEffect(() => {
+        // on popstate, apply history.state if present, else fall back to hash parsing
+        const onPop = (event) => {
+          const s = event.state || stateFromHash();
+          applyState(s);
+        };
+
+        window.addEventListener('popstate', onPop);
+
+        // Initialize app state on first load:
+        const initial = history.state || stateFromHash();
+        // Replace the history entry to ensure structured state is present
+        const normalized = (initial && initial.page) ? initial : stateFromHash();
+        history.replaceState(normalized, '', location.hash || '#home');
+        applyState(normalized);
+
+        return () => window.removeEventListener('popstate', onPop);
+      }, []);
+
+      // filtered products for search
+      const filteredProducts = ALL_PRODUCTS.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      // render based on current state
+      const renderPage = () => {
+        if (selectedProduct) {
+          return <ProductDetailPage product={selectedProduct} />;
+        }
+        if (searchQuery) {
+          return <SearchResultsPage products={filteredProducts} searchQuery={searchQuery} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
+        }
+        switch (currentPage) {
+          case 'home':
+            return <HomePage onNavigate={handlePageChange} />;
+          case 'men':
+            return <FragranceCategoryPage title="Men's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'men')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
+          case 'women':
+            return <FragranceCategoryPage title="Women's Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'women')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
+          case 'unisex':
+            return <FragranceCategoryPage title="Unisex Perfumes" products={ALL_PRODUCTS.filter(p => p.gender === 'unisex')} onProductSelect={handleProductSelect} onSearch={handleSearch} onNavigate={handlePageChange} currentPage={currentPage} />;
+          case 'about':
+            return <AboutPage />;
+          case 'contact':
+            return <ContactPage onSubmit={handleSubmit} showSuccess={showSuccessMessage} />;
+          default:
+            return <HomePage onNavigate={handlePageChange} />;
+        }
+      };
+
+      const showBackButton = currentPage !== 'home' || !!selectedProduct || !!searchQuery;
+
+      return (
+        <div className="bg-[#0f0f12] text-[#f5f6f8] min-h-screen font-[Poppins]">
+          <Header onNavigate={handlePageChange} currentPage={currentPage} onBack={handleBack} showBackButton={showBackButton} />
+          <div className="container mx-auto px-4 py-8">
+            {renderPage()}
+          </div>
+          <Footer />
+        </div>
+      );
     };
-
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
-
-  // --- Render ---
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header
-        onNavigate={handlePageChange}
-        onSearch={handleSearch}
-        onBack={handleBack}
-        showBack={!!selectedProduct}
-      />
-
-      <main className="flex-1 p-6">
-        {selectedProduct ? (
-          <ProductDetail product={selectedProduct} />
-        ) : (
-          <>
-            {currentPage === "home" && (
-              <>
-                <Section title="Men's Fragrances" products={MENS_FRAGRANCES} onSelect={handleProductSelect} />
-                <Section title="Women's Fragrances" products={WOMENS_FRAGRANCES} onSelect={handleProductSelect} />
-                <Section title="Unisex Fragrances" products={UNISEX_FRAGRANCES} onSelect={handleProductSelect} />
-              </>
-            )}
-
-            {currentPage === "men" && (
-              <Section title="Men's Fragrances" products={MENS_FRAGRANCES} onSelect={handleProductSelect} />
-            )}
-            {currentPage === "women" && (
-              <Section title="Women's Fragrances" products={WOMENS_FRAGRANCES} onSelect={handleProductSelect} />
-            )}
-            {currentPage === "unisex" && (
-              <Section title="Unisex Fragrances" products={UNISEX_FRAGRANCES} onSelect={handleProductSelect} />
-            )}
-
-            {currentPage === "about" && <About />}
-            {currentPage === "contact" && <Contact />}
-          </>
-        )}
-
-        {searchQuery && !selectedProduct && (
-          <SearchResults
-            query={searchQuery}
-            products={ALL_PRODUCTS}
-            onSelect={handleProductSelect}
-          />
-        )}
-      </main>
-
-      <Footer />
-    </div>
-   );
- }
-};
 
     // Header Component
     const Header = ({ onNavigate, currentPage, onBack, showBackButton }) => {
@@ -548,9 +496,9 @@
                   </svg>
                 </button>
               ) : (
-                <img src="images/daniel-logo.jpg" className="w-10 h-10 rounded-xl shadow-lg" alt="Daniels Perfumes Logo" />
+                <img src="images/daniel logo.jpg" className="w-10 h-10 rounded-xl shadow-lg" alt="Fragrance Island Logo" />
               )}
-              <span className="font-semibold">DANIEL PERFUMES</span>
+              <span className="font-semibold">Fragrance Island</span>
             </div>
 
             {/* Desktop nav */}
@@ -597,9 +545,9 @@
     // HomePage Component
     const HomePage = ({ onNavigate }) => {
       const categories = [
-        { name: 'FOR HIM', key: 'men', imageUrl: 'images/for-him.jpg' },
-        { name: 'FOR HER', key: 'women', imageUrl: 'images/for-her.jpg' },
-        { name: 'FOR EVERYONE', key: 'unisex', imageUrl: 'images/for-everyone.jpg' },
+        { name: 'For Him', key: 'men', imageUrl: 'images/for-him.jpg' },
+        { name: 'For Her', key: 'women', imageUrl: 'images/for-her.jpg' },
+        { name: 'For Everyone', key: 'unisex', imageUrl: 'images/for-everyone.jpg' },
       ];
 
       return (
@@ -636,7 +584,7 @@
     // Footer Component
     const Footer = () => (
       <footer className="py-8 text-center text-white/50 text-sm">
-        <p>© {new Date().getFullYear()} DANIEL PERFUMES – All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Fragrance Island – All rights reserved.</p>
         <div className="mt-2 flex justify-center items-center">
           <a href="https://www.instagram.com/danielperfumes_ug?igsh=d3ppb2p1ZXg5MjVt" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#d2b48c] transition-colors">
             <svg
@@ -650,7 +598,7 @@
               viewBox="0 0 448 512"
               fill="currentColor"
             >
-              <path d="M224.1 128.7c-33.1 0-59.5 26.5-59.5 59.5s26.5 59.5 59.5 59.5c33.1 0 59.5-26.5 59.5-59.5S257.2 128.7 224.1 128.7zM425 224c-1.3 22-8.3 43.3-21.6 62.1c-13.3 18.9-31.5 33.9-52 42.1c-20.5 8.1-43.1 10.3-64.8 6.4c-21.7-3.9-42.3-13.1-59.3-27.1c-17-14-30.8-32.3-40.2-53.5c-9.4-21.2-13.6-44.5-12.2-67.6c1.4-23.1 8.2-46.1 20.9-66.9c12.7-20.8 29.5-38.3 49.3-51.5c19.8-13.2 41.5-21.1 63.8-23.7c22.3-2.6 44.5-1.5 65.6 3.1c21.2 4.6 40.8 13.9 57.7 27.6c16.9 13.7 30.5 31.4 39.7 51.5c9.2 20.1 13.1 41.8 11.8 63.8zM224.1 0c-40.8 0-78.5 16.2-106.6 44.4C89.5 72.4 73.3 110.1 73.3 150.9c0 40.8 16.2 78.5 44.4 106.6c28.1 28.2 65.8 44.4 106.6 44.4c40.8 0 78.5-16.2 106.6-44.4c28.1-28.1 44.4-65.8 44.4-106.6c0-40.8-16.2-78.5-44.4-106.6C302.6 16.2 264.9 0 224.1 0zm0 304.1c-8.9 0-17.7-.3-26.4-.9c-8.7-.6-17.3-1.8-25.8-3.5c-8.5-1.7-16.9-3.9-25.1-10.2c-7.8-6.3-14.1-13.2-20.7-20.7c-6.6-7.5-12.7-15.4-18.4-23.1c-5.7-7.7-10.6-15.8-15.1-24.1c-4.5-8.3-8.2-16.8-11.1-25.5c-2.9-8.7-5.1-17.5-6.5-26.4c-1.4-8.9-1.6-17.9-.7-26.9c.9-9 2.9-17.9 5.8-26.7c2.9-8.8 6.7-17.5 11.4-25.9c4.7-8.4 10.3-16.5 16.8-24.1c6.5-7.6 13.8-14.7 21.8-21.2c8-6.5 16.7-12.4 25.9-17.5c9.2-5.1 18.7-9.5 28.5-13.1c9.8-3.6 19.8-6.5 30-8.8c10.2-2.3 20.4-3.9 30.6-4.7c10.2-.8 20.4-.8 30.5 0c10.1 0 20.1.8 30 2.3c9.9 1.5 19.5 3.5 28.9 6.2c9.4 2.7 18.7 5.9 27.8 9.7c9.1 3.8 18.1 8.2 26.8 13.1c8.7 4.9 17.2 10.3 25.4 16.3c8.2 6 16.2 12.6 23.9 19.9c7.7 7.3 15 15.2 21.9 23.7c6.9 8.5 13.4 17.5 19.5 27c6.1 9.5 11.7 19.4 16.8 29.8c5.1 10.4 9.6 21.1 13.5 32.2c3.9 11.1 7.2 22.5 9.9 34.2c2.7 11.7 4.8 23.5 6.2 35.5c1.4 12 .9 24.1-1.3 36.1c-2.2 12-5.5 23.7-9.9 35.1c-4.4 11.4-9.8 22.5-16.1 33.1c-6.3 10.6-13.4 20.8-21.4 30.4c-8 9.6-16.8 18.8-26.4 27.5c-9.6 8.7-19.9 16.9-31 24.4c-11.1 7.5-22.8 14.4-35.2 20.5c-12.4 6.1-25.2 11.5-38.3 16.2c-13.1 4.7-26.4 8.7-39.7 12c-13.3 3.3-26.6 5.8-39.8 7.6c-13.2 1.8-26.5 2.8-39.7 3.1c-13.2.3-26.4.2-39.6-.3c-13.2-.5-26.4-1.5-39.5-3.1c-13.1-1.6-26.2-3.8-39.1-6.7c-12.9-2.9-25.6-6.5-38.1-10.8c-12.5-4.3-24.8-9.4-36.8-15.3c-12-5.9-23.7-12.6-35.2-20c-11.5-7.4-22.7-15.5-33.5-24.3c-10.8-8.8-21.2-18.4-31.1-28.7c-9.9-10.3-19.2-21.4-28-33.1c-8.8-11.7-17.1-24.1-24.8-37.1c-7.7-13-14.8-26.6-21.2-40.8c-6.4-14.2-12.2-28.9-17.4-44c-5.2-15.1-9.9-30.6-14-46.5c-4.1-15.9-7.5-32.2-10.2-48.7c-2.7-16.5-4.7-33.2-6-50c-1.3-16.8-1.5-33.7-.6-50.6c.9-16.9 2.9-33.8 5.8-50.6c3-16.8 6.9-33.5 11.8-49.9c4.9-16.4 10.7-32.6 17.5-48.4c6.8-15.8 14.4-31.2 22.9-46.1c8.5-14.9 17.8-29.4 27.9-43.2c10.1-13.8 21.1-26.9 32.9-39.1c11.8-12.2 24.3-23.6 37.6-34.1c13.3-10.5 27.2-20.1 41.6-28.8c14.4-8.7 29.3-16.4 44.6-23.1c15.3-6.7 30.9-12.4 46.8-17c15.9-4.6 32-8.1 48.3-10.5c16.3-2.4 32.8-3.7 49.3-3.8c16.5-.1 33-.1 49.3 0c16.3 0 32.6.2 48.8.8c16.2.6 32.3 1.9 48.1 3.9c15.8 2 31.3 4.8 46.5 8.3c15.2 3.5 29.9 7.9 44.2 13.2c14.3 5.3 28.1 11.5 41.3 18.6c13.2 7.1 25.8 15.1 37.7 24c11.9 8.9 23 18.7 33.3 29.3c10.3 10.6 19.8 22.2 28.5 34.6c8.7 12.4 16.7 25.4 23.9 39.2c7.2 13.8 13.6 27.9 19.2 42.4c5.6 14.5 10.4 29.2 14.2 44.3c3.8 15.1 6.8 30.5 8.9 46.1c2.1 15.6 3.4 31.4 3.7 47.3c.3 16 .1 31.9-.6 47.8c-.8 15.9-2.3 31.7-4.7 47.4c-2.4 15.7-5.5 31.2-9.3 46.5c-3.8 15.3-8.5 30.3-13.9 44.9c-5.4 14.6-11.6 28.8-18.4 42.6c-6.8 13.8-14.3 27.1-22.5 39.9c-8.2 12.8-17.1 25.1-26.7 36.8c-9.6 11.7-19.8 22.9-30.6 33.5c-10.8 10.6-22.3 20.6-34.4 29.9c-12.1 9.3-24.8 17.9-38 25.7c-13.2 7.8-26.8 14.9-40.8 21.2c-14 6.3-28.4 11.8-43 16.4c-14.6 4.6-29.3 8.3-44.1 11.2c-14.8 2.9-29.6 5.1-44.4 6.6c-14.8 1.5-29.6 2.3-44.4 2.3z" />
+              <path d="M224.1 128.7c-33.1 0-59.5 26.5-59.5 59.5s26.5 59.5 59.5 59.5c33.1 0 59.5-26.5 59.5-59.5S257.2 128.7 224.1 128.7zM425 224c-1.3 22-8.3 43.3-21.6 62.1c-13.3 18.9-31.5 33.9-52 42.1c-20.5 8.1-43.1 10.3-64.8 6.4c-21.7-3.9-42.3-13.1-59.3-27.1c-17-14-30.8-32.3-40.2-53.5c-9.4-21.2-13.6-44.5-12.2-67.6c1.4-23.1 8.2-46.1 20.9-66.9c12.7-20.8 29.5-38.3 49.3-51.5c19.8-13.2 41.5-21.1 63.8-23.7c22.3-2.6 44.5-1.5 65.6 3.1c21.2 4.6 40.8 13.9 57.7 27.6c16.9 13.7 30.5 31.4 39.7 51.5c9.2 20.1 13.1 41.8 11.8 63.8zM224.1 0c-40.8 0-78.5 16.2-106.6 44.4C89.5 72.4 73.3 110.1 73.3 150.9c0 40.8 16.2 78.5 44.4 106.6c28.1 28.2 65.8 44.4 106.6 44.4c40.8 0 78.5-16.2 106.6-44.4c28.1-28.1 44.4-65.8 44.4-106.6c0-40.8-16.2-78.5-44.4-106.6C302.6 16.2 264.9 0 224.1 0zm0 304.1c-8.9 0-17.7-.3-26.4-.9c-8.7-.6-17.3-1.8-25.8-3.5c-8.5-1.7-16.9-3.9-25.1-10.2c-7.8-6.3-14.1-13.2-20.7-20.7c-6.6-7.5-12.7-15.4-18.4-23.1c-5.7-7.7-10.6-15.8-15.1-24.1c-4.5-8.3-8.2-16.8-11.1-25.5c-2.9-8.7-5.1-17.5-6.5-26.4c-1.4-8.9-1.6-17.9-.7-26.9c.9-9 2.9-17.9 5.8-26.7c2.9-8.8 6.7-17.5 11.4-25.9c4.7-8.4 10.3-16.5 16.8-24.1c6.5-7.6 13.8-14.7 21.8-21.2c8-6.5 16.7-12.4 25.9-17.5c9.2-5.1 18.7-9.5 28.5-13.1c9.8-3.6 19.8-6.5 30-8.8c10.2-2.3 20.4-3.9 30.6-4.7c10.2-.8 20.4-.8 30.5 0c10.1 0 20.1.8 30 2.3c9.9 1.5 19.5 3.5 28.9 6.2c9.4 2.7 18.7 5.9 27.8 9.7c9.1 3.8 18.1 8.2 26.8 13.1c8.2 6 16.2 12.6 23.9 19.9c7.7 7.3 15 15.2 21.9 23.7c6.9 8.5 13.4 17.5 19.5 27c6.1 9.5 11.7 19.4 16.8 29.8c5.1 10.4 9.6 21.1 13.5 32.2c3.9 11.1 7.2 22.5 9.9 34.2c2.7 11.7 4.8 23.5 6.2 35.5c1.4 12 .9 24.1-1.3 36.1c-2.2 12-5.5 23.7-9.9 35.1c-4.4 11.4-9.8 22.5-16.1 33.1c-6.3 10.6-13.4 20.8-21.4 30.4c-8 9.6-16.8 18.8-26.4 27.5c-9.6 8.7-19.9 16.9-31 24.4c-11.1 7.5-22.8 14.4-35.2 20.5c-12.4 6.1-25.2 11.5-38.3 16.2c-13.1 4.7-26.4 8.7-39.7 12c-13.3 3.3-26.6 5.8-39.8 7.6c-13.2 1.8-26.5 2.8-39.7 3.1c-13.2.3-26.4.2-39.6-.3c-13.2-.5-26.4-1.5-39.5-3.1c-13.1-1.6-26.2-3.8-39.1-6.7c-12.9-2.9-25.6-6.5-38.1-10.8c-12.5-4.3-24.8-9.4-36.8-15.3c-12-5.9-23.7-12.6-35.2-20c-11.5-7.4-22.7-15.5-33.5-24.3c-10.8-8.8-21.2-18.4-31.1-28.7c-9.9-10.3-19.2-21.4-28-33.1c-8.8-11.7-17.1-24.1-24.8-37.1c-7.7-13-14.8-26.6-21.2-40.8c-6.4-14.2-12.2-28.9-17.4-44c-5.2-15.1-9.9-30.6-14-46.5c-4.1-15.9-7.5-32.2-10.2-48.7c-2.7-16.5-4.7-33.2-6-50c-1.3-16.8-1.5-33.7-.6-50.6c.9-16.9 2.9-33.8 5.8-50.6c3-16.8 6.9-33.5 11.8-49.9c4.9-16.4 10.7-32.6 17.5-48.4c6.8-15.8 14.4-31.2 22.9-46.1c8.5-14.9 17.8-29.4 27.9-43.2c10.1-13.8 21.1-26.9 32.9-39.1c11.8-12.2 24.3-23.6 37.6-34.1c13.3-10.5 27.2-20.1 41.6-28.8c14.4-8.7 29.3-16.4 44.6-23.1c15.3-6.7 30.9-12.4 46.8-17c15.9-4.6 32-8.1 48.3-10.5c16.3-2.4 32.8-3.7 49.3-3.8c16.5-.1 33-.1 49.3 0c16.3 0 32.6.2 48.8.8c16.2.6 32.3 1.9 48.1 3.9c15.8 2 31.3 4.8 46.5 8.3c15.2 3.5 29.9 7.9 44.2 13.2c14.3 5.3 28.1 11.5 41.3 18.6c13.2 7.1 25.8 15.1 37.7 24c11.9 8.9 23 18.7 33.3 29.3c10.3 10.6 19.8 22.2 28.5 34.6c8.7 12.4 16.7 25.4 23.9 39.2c7.2 13.8 13.6 27.9 19.2 42.4c5.6 14.5 10.4 29.2 14.2 44.3c3.8 15.1 6.8 30.5 8.9 46.1c2.1 15.6 3.4 31.4 3.7 47.3c.3 16 .1 31.9-.6 47.8c-.8 15.9-2.3 31.7-4.7 47.4c-2.4 15.7-5.5 31.2-9.3 46.5c-3.8 15.3-8.5 30.3-13.9 44.9c-5.4 14.6-11.6 28.8-18.4 42.6c-6.8 13.8-14.3 27.1-22.5 39.9c-8.2 12.8-17.1 25.1-26.7 36.8c-9.6 11.7-19.8 22.9-30.6 33.5c-10.8 10.6-22.3 20.6-34.4 29.9c-12.1 9.3-24.8 17.9-38 25.7c-13.2 7.8-26.8 14.9-40.8 21.2c-14 6.3-28.4 11.8-43 16.4c-14.6 4.6-29.3 8.3-44.1 11.2c-14.8 2.9-29.6 5.1-44.4 6.6c-14.8 1.5-29.6 2.3-44.4 2.3z" />
             </svg>
           </a>
         </div>
@@ -821,13 +769,13 @@
     const AboutPage = () => (
       <>
         <div className="text-center py-10">
-          <h1 className="text-4xl font-bold mb-2">About DANIEL PERFUMES</h1>
+          <h1 className="text-4xl font-bold mb-2">About Fragrance Island</h1>
           <p className="text-white/70">Crafting luxury fragrance experiences that are accessible to everyone.</p>
         </div>
 
         <div className="max-w-4xl mx-auto text-white/80 space-y-6">
           <p>
-            Founded in 2020, DANIELS' began with a simple mission: to make luxury fragrances accessible without compromising on quality.
+            Founded in 2020, Fragrance Island began with a simple mission: to make luxury fragrances accessible without compromising on quality.
             Our founder, who is passionate in the fragrance industry, noticed that many people loved designer scents
             but couldn't find them locally.
           </p>
@@ -879,7 +827,7 @@
               </div>
               <div className="bg-[#16161a] p-6 rounded-2xl border border-white/10 shadow-lg">
                 <h3 className="text-xl font-bold text-[#d2b48c] mb-2">✉️ Email Us</h3>
-                <p className="text-white/80">hello@Daniels'.com<br />We respond within 24 hours</p>
+                <p className="text-white/80">hello@fragranceisland.com<br />We respond within 24 hours</p>
               </div>
             </div>
 
